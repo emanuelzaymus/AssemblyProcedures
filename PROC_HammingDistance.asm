@@ -5,9 +5,9 @@ INCLUDE Irvine32.inc
 .code
 
 Comment /* Returns count of bits at which A and B are different in EAX. */
-HammingDistance PROC USES ebx edi  A, B
-	mov eax, 0
-	mov edi, 0
+HammingDistance PROC USES ebx ecx  A, B
+	mov eax, 0				;result
+	mov ecx, 32				;loop
 
 	mov ebx, A
 	xor ebx, B
@@ -16,10 +16,7 @@ HammingDistance PROC USES ebx edi  A, B
 			jnc DoNotInc
 		inc eax
 		DoNotInc:
-
-		inc edi
-		cmp edi, 32
-			jl Cyklus
+	loop Cyklus
 	ret
 HammingDistance ENDP
 

@@ -9,27 +9,22 @@ Sequence DD -6, -2, 0, 2, 4, 6, 8, 10, 16, 19, 20, 21, 45, 98, 100
 
 Comment /* Reverses Sequence. */
 Reverse PROC USES eax ebx edi esi
-	mov edi, 0
-	mov ecx, lengthOf Sequence - 1
+	mov esi, 0							;front iter
+	mov edi, lengthOf Sequence - 1		;back iter
 	mov eax, lengthOf Sequence
 	mov bl, 2
 	div bl
 	mov ah, 0
-	mov esi, eax
+	mov ecx, eax			;esi = (lengthOf Sequence) div 2
 
 	Swap:
-		mov eax, Sequence[edi * 4]
-		push edi
+		mov eax, Sequence[esi * 4]
+		xchg Sequence[edi * 4], eax	
+		mov Sequence[esi * 4], eax
 
-		imul edi, -1
-		add edi, ecx
-		xchg Sequence[edi * 4], eax
-
-		pop edi
-		mov Sequence[edi * 4], eax
-
-		inc edi
-	cmp edi, esi
+		inc esi
+		dec edi
+	cmp edi, ecx
 		jb Swap
 	ret
 Reverse ENDP
@@ -37,15 +32,15 @@ Reverse ENDP
 
 Comment /* Writes Sequence separated with white space. */
 WriteSequence PROC USES eax edx edi
-	mov edi, 0
+	mov esi, 0		;iter
 
 	WriteDown:
-		mov eax, Sequence[edi * 4]
+		mov eax, Sequence[esi * 4]
 		call WriteInt
 		mov al, ' '
 		call WriteChar
-		inc edi
-	cmp edi, lengthOf Sequence
+		inc esi
+	cmp esi, lengthOf Sequence
 		jb WriteDown
 
 	call Crlf

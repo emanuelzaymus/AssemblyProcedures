@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.11.25508.2	    01/21/18 21:08:13
+Microsoft (R) Macro Assembler Version 14.11.25508.2	    01/21/18 23:39:40
 MASM Template						(main.asm  Page 1 - 1
 
 
@@ -30,61 +30,65 @@ Microsoft (R) Macro Assembler Version 14.11.25508.2	    01/21/18 21:08:13
 	   65 6E 74 65 6E
 	   63 65 2E 20 3A
 	   44 0D 0A 00
+ 0000001D 00			NewStr DB ?
 
  00000000			.code
 
-				Comment /* Returns position of the first found char in string in EAX else returns -1. */
- 00000000			FindChar PROC USES ecx esi paOffSourceStr, paChar
+				Comment /* Retrns offset of new substring in EDX. */
+ 00000000			SubString PROC USES eax ebx ecx edi esi paOffSourceStr, paOffNewStr, paStartPos, paLength
  00000000  55		   *	    push   ebp
  00000001  8B EC	   *	    mov    ebp, esp
- 00000003  51		   *	    push   ecx
- 00000004  56		   *	    push   esi
- 00000005  8B 45 08			mov eax, paOffSourceStr
- 00000008  8A 6D 0C			mov ch, BYTE ptr paChar
- 0000000B  BE 00000000			mov esi, 0					;iter for eax (paOffSourceStr)
+ 00000003  50		   *	    push   eax
+ 00000004  53		   *	    push   ebx
+ 00000005  51		   *	    push   ecx
+ 00000006  57		   *	    push   edi
+ 00000007  56		   *	    push   esi
+ 00000008  8B 45 08			mov eax, paOffSourceStr
+ 0000000B  8B 55 0C			mov edx, paOffNewStr
+ 0000000E  8B 75 10			mov esi, paStartPos			;starting position of new substring
+ 00000011  8B 4D 14			mov ecx, paLength			;length of new substring
+ 00000014  BF 00000000			mov edi, 0
 
- 00000010				Search:
- 00000010  8A 0C 30				mov cl, [eax + esi]		;cl - compared char
- 00000013  3A E9				cmp ch, cl
- 00000015  74 11					je Found
- 00000017  46					inc esi
- 00000018  80 F9 00			cmp cl, 0
- 0000001B  75 F3				jne Search
-					
- 0000001D  B8 FFFFFFFF			mov eax, -1
+ 00000019				Cycle:
+ 00000019  8A 1C 30				mov bl, [eax + esi]
+ 0000001C  88 1C 3A				mov [edx + edi], bl
+
+ 0000001F  46					inc esi
+ 00000020  47					inc edi
+ 00000021  E2 F6			loop Cycle
 					ret
- 00000022  5E		   *	    pop    esi
- 00000023  59		   *	    pop    ecx
- 00000024  C9		   *	    leave  
- 00000025  C2 0008	   *	    ret    00008h
-
- 00000028				Found:                  
- 00000028  8B C6				mov eax, esi
-						ret
- 0000002A  5E		   *	    pop    esi
- 0000002B  59		   *	    pop    ecx
- 0000002C  C9		   *	    leave  
- 0000002D  C2 0008	   *	    ret    00008h
- 00000030			FindChar ENDP
+ 00000023  5E		   *	    pop    esi
+ 00000024  5F		   *	    pop    edi
+ 00000025  59		   *	    pop    ecx
+ 00000026  5B		   *	    pop    ebx
+ 00000027  58		   *	    pop    eax
+ 00000028  C9		   *	    leave  
+ 00000029  C2 0010	   *	    ret    00010h
+ 0000002C			SubString ENDP
 
 
- 00000030			main PROC
+ 0000002C			main PROC
 
-					invoke FindChar, offset String, 's'
- 00000030  6A 73	   *	    push   +000000073h
- 00000032  68 00000000 R   *	    push   dword  ptr OFFSET FLAT: String
- 00000037  E8 FFFFFFC4	   *	    call   FindChar
+ 0000002C  BA 00000000 R		mov edx, offset String
+ 00000031  E8 00000000 E		call WriteString
 
- 0000003C  E8 00000000 E		call WriteInt
- 00000041  E8 00000000 E		call Crlf
+					invoke SubString, offset String, offset NewStr, 8, 14
+ 00000036  6A 0E	   *	    push   +00000000Eh
+ 00000038  6A 08	   *	    push   +000000008h
+ 0000003A  68 0000001D R   *	    push   dword  ptr OFFSET FLAT: NewStr
+ 0000003F  68 00000000 R   *	    push   dword  ptr OFFSET FLAT: String
+ 00000044  E8 FFFFFFB7	   *	    call   SubString
+
+ 00000049  E8 00000000 E		call WriteString
+ 0000004E  E8 00000000 E		call Crlf
 					
 					exit
- 00000046  6A 00	   *	    push   +000000000h
- 00000048  E8 00000000 E   *	    call   ExitProcess
- 0000004D			main ENDP
+ 00000053  6A 00	   *	    push   +000000000h
+ 00000055  E8 00000000 E   *	    call   ExitProcess
+ 0000005A			main ENDP
 
 				END main
-Microsoft (R) Macro Assembler Version 14.11.25508.2	    01/21/18 21:08:13
+Microsoft (R) Macro Assembler Version 14.11.25508.2	    01/21/18 23:39:40
 MASM Template						(main.asm  Symbols 2 - 1
 
 
@@ -178,8 +182,8 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 0000001D Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 0000004D Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000001E Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000005A Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -198,11 +202,6 @@ DumpRegs . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FileTimeToDosDateTime  . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FileTimeToSystemTime . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-FindChar . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000030 Public STDCALL
-  paOffSourceStr . . . . . . . .	DWord	 bp + 00000008
-  paChar . . . . . . . . . . . .	DWord	 bp + 0000000C
-  Search . . . . . . . . . . . .	L Near	 00000010 _TEXT	
-  Found  . . . . . . . . . . . .	L Near	 00000028 _TEXT	
 FlushConsoleInputBuffer  . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FormatMessageA . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 GetCommandLineA  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -272,6 +271,12 @@ Str_copy . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 Str_length . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_trim . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_ucase  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+SubString  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000002C Public STDCALL
+  paOffSourceStr . . . . . . . .	DWord	 bp + 00000008
+  paOffNewStr  . . . . . . . . .	DWord	 bp + 0000000C
+  paStartPos . . . . . . . . . .	DWord	 bp + 00000010
+  paLength . . . . . . . . . . .	DWord	 bp + 00000014
+  Cycle  . . . . . . . . . . . .	L Near	 00000019 _TEXT	
 SystemTimeToFileTime . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WaitMsg  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteBinB  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -291,7 +296,7 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000030 _TEXT	Length= 0000001D Public STDCALL
+main . . . . . . . . . . . . . .	P Near	 0000002C _TEXT	Length= 0000002E Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
@@ -412,6 +417,7 @@ MOUSE_EVENT  . . . . . . . . . .	Number	 00000002h
 MessageBox . . . . . . . . . . .	Text   	 MessageBoxA
 NULL . . . . . . . . . . . . . .	Number	 00000000h   
 NUMLOCK_ON . . . . . . . . . . .	Number	 00000020h   
+NewStr . . . . . . . . . . . . .	Byte	 0000001D _DATA	
 OPEN_ALWAYS  . . . . . . . . . .	Number	 00000004h   
 OPEN_EXISTING  . . . . . . . . .	Number	 00000003h   
 PeekConsoleInput . . . . . . . .	Text   	 PeekConsoleInputA

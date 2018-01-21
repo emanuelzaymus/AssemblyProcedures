@@ -7,15 +7,19 @@ Sequence DD 20 dup (?)
 
 .code
 
-Comment /* Fills Sequence with random integers between -100 and 100. */
-GenerateSequence PROC USES eax edi
+Comment /* Fills Sequence with random integers between paBottom and paTop. */
+GenerateSequence PROC USES eax edi paBottom, paTop
 	call Randomize
-	mov edi, 0
-	mov eax, 0
+	mov edi, 0						;iter for Sequence
+	mov eax, 0						;generated number
+	mov ebx, paTop
+	sub ebx, paBottom
+	inc ebx							;ebx - range for generating <0, paTop - paBottom + 1>
+
 	Generate:
-		mov eax, 201
-		call RandomRange
-		sub eax, 100
+		mov eax, ebx
+		call RandomRange				;eax = number from <0, ebx>
+		add eax, paBottom				;shift eax to <paBottom, paTop>
 		mov Sequence[edi * 4], eax
 
 		inc edi
@@ -27,7 +31,7 @@ GenerateSequence ENDP
 
 main PROC
 
-	call GenerateSequence
+	invoke GenerateSequence, -1000, 1000
 
 	mov edi, 0
 	REPT lengthOf Sequence

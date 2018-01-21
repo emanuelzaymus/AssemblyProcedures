@@ -8,20 +8,20 @@ NewStr DB ?
 
 .code
 
-Comment /* Retrns offset of new substring in EDX.  */
+Comment /* Retrns offset of new substring in EDX. */
 SubString PROC USES eax ebx ecx edi esi paOffSourceStr, paOffNewStr, paStartPos, paLength
 	mov eax, paOffSourceStr
 	mov edx, paOffNewStr
-	mov edi, paStartPos
-	mov ecx, paLength
-	mov esi, 0
+	mov esi, paStartPos			;starting position of new substring
+	mov ecx, paLength			;length of new substring
+	mov edi, 0
 
 	Cycle:
-		mov bl, [eax + edi]
-		mov [edx + esi], bl
+		mov bl, [eax + esi]
+		mov [edx + edi], bl
 
-		inc edi
 		inc esi
+		inc edi
 	loop Cycle
 	ret
 SubString ENDP

@@ -11,13 +11,13 @@ Comment /* Returns the first greatest element in Sequence in EAX and its positio
 MAX PROC USES edi
 	mov eax, [Sequence]		;max element
 	mov ebx, 0				;position of max element
-	mov edi, 1
+	mov edi, 1				;iterator
 
 	Search:
 		cmp eax, Sequence[edi * 4]
 			jge IsNotGreater
-		mov eax, Sequence[edi * 4]
-		mov ebx, edi
+		mov eax, Sequence[edi * 4]		;set the greatest num
+		mov ebx, edi					;set the position
 
 		IsNotGreater:
 		inc edi

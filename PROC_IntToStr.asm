@@ -11,8 +11,8 @@ Comment /* Converts integer in EAX into String. Sets EDX to offset String. */
 IntToStr PROC USES eax ebx ecx edi
 	mov esi, offset String		;address of String
 	mov edi, 0					;iterator
-	mov ebx, 10
-	mov cl, '-'
+	mov ebx, 10					;10 for division
+	mov cl, '-'					;minus sign
 
 	cmp eax, 0
 		jge DoNotNeg
@@ -22,21 +22,20 @@ IntToStr PROC USES eax ebx ecx edi
 	
 	DoNotNeg:
 	push eax
-	GetLength:
-		cdq
-		div ebx
-		inc edi
-	cmp eax, 0
-		jne GetLength
-	dec edi
+		GetLength:				;getting length of eax
+			cdq
+			div ebx
+			inc edi
+		cmp eax, 0
+			jne GetLength
+		dec edi					;length of eax
 	pop eax
 
-	Convert:
+	Convert:					;converting int to string
 		cdq
-		mov dl, 0
 		div ebx
-		add dl, '0'
-		mov [esi + edi], dl
+		add dl, '0'				;dl = reminder after division eax by 10 + '0'
+		mov [esi + edi], dl		;writes reminder
 		dec edi
 	cmp eax, 0
 		jne Convert

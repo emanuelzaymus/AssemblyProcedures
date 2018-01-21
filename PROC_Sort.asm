@@ -11,23 +11,23 @@ Comment /* Sorts Sequence to ascending sequence. */
 Sort PROC USES eax ebx edi esi
 	mov esi, lengthOf Sequence - 1
 	MainSortLoop:
-		mov edi, 0
-		mov bl, 0			;bool wasSwap 
+		mov edi, 0						;iter for Sequence
+		mov bl, 0						;bool wasSwap = False
 		Sorting:
 			mov eax, Sequence[edi * 4]
 			inc edi
 			cmp eax, Sequence[edi * 4]
 				jle IsSmaller
-			xchg eax, Sequence[edi * 4]
+			xchg eax, Sequence[edi * 4]		;swap values
 			dec edi
 			mov Sequence[edi * 4], eax
 			inc edi
-			mov bl, 1
+			mov bl, 1					;wasSwap = Ture
 
 			IsSmaller:
-		cmp edi, esi
+		cmp edi, esi			;goes through whole Sequence
 			jb Sorting
-	cmp bl, 1
+	cmp bl, 1					;if (wasSwap == True) repeat
 		je MainSortLoop
 	ret
 Sort ENDP
@@ -35,15 +35,15 @@ Sort ENDP
 
 Comment /* Writes Sequence separated with white space. */
 WriteSequence PROC USES eax edx edi
-	mov edi, 0
+	mov esi, 0		;iter
 
 	WriteDown:
-		mov eax, Sequence[edi * 4]
+		mov eax, Sequence[esi * 4]
 		call WriteInt
 		mov al, ' '
 		call WriteChar
-		inc edi
-	cmp edi, lengthOf Sequence
+		inc esi
+	cmp esi, lengthOf Sequence
 		jb WriteDown
 
 	call Crlf

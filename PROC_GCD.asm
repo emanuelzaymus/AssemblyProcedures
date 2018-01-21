@@ -7,20 +7,21 @@ INCLUDE Irvine32.inc
 
 Comment /* Returns the greatest common divisor of A and B in EAX. */
 GCD PROC USES edx A, B
-	DivideNumbers:
-		cmp B, 0
+	DivideNumbers:				;Euclidean algorithm
+		cmp B, 0				;while (B != 0) {
 			je StopDivision
-		push B
+		push B					;	C = B
 
 		mov eax, A
 		cdq
 		idiv B
-		mov B, edx
+		mov B, edx				;	B = A mod B
 
-		pop A
-		jmp DivideNumbers
+		pop A					;	A = C
+	jmp DivideNumbers			;}
+
 	StopDivision:
-	mov eax, A
+		mov eax, A
 	ret
 GCD ENDP
 

@@ -29,7 +29,7 @@ main PROC
 	call ReadStrFromFile
 
 	call WriteString
-	Call Crlf
+	call Crlf
 
 	exit
 main ENDP
