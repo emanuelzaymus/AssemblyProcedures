@@ -11,12 +11,12 @@ HammingDistance PROC USES ebx ecx  A, B
 
 	mov ebx, A
 	xor ebx, B
-	Cyklus:
+	CheckBit:
 		shr ebx, 1
 			jnc DoNotInc
 		inc eax
 		DoNotInc:
-	loop Cyklus
+	loop CheckBit
 	ret
 HammingDistance ENDP
 
